@@ -9,3 +9,4 @@ prisma/generated-content.prisma
 !.yarn/sdks
 !.yarn/versions
 coverage
+dist
