@@ -1,6 +1,7 @@
 // src/core/reader.ts
 
-import { ModelConfigSchema, ModelConfigType, getValidationErrors } from '../field-config-schema';
+import { ModelConfigSchema,  getValidationErrors } from '../field-config-schema';
+import type { ModelConfigType } from '../field-config-schema';
 import { ZodError } from 'zod';
 
 export interface EAVDatabaseRow {
