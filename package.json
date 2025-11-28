@@ -1,6 +1,6 @@
 {
   "name": "eav-to-prisma",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Generate Prisma schemas from EAV database structures",
   "author": "multipliedtwice",
   "license": "MIT",
