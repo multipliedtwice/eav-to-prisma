@@ -1,0 +1,3 @@
+model Media {
+  id String @id
+}

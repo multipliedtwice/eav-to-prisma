@@ -1,0 +1,162 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("CONTENT_DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "./node_modules/.prisma/client-content"
+  previewFeatures = []
+}
+
+generator zod {
+  provider = "zod-prisma-types"
+  output   = "./generated/zod"
+}
+
+model User {
+  id           String            @id @default(cuid())
+  /// @zod.min(2).max(100)
+  name         String
+  /// @zod.email()
+  email        String
+  created_at   DateTime          @default(now())
+  updated_at   DateTime          @updatedAt
+  translations UserTranslation[]
+}
+
+model UserTranslation {
+  id      String  @id @default(cuid())
+  user_id String
+  lang    String
+  bio     String?
+  user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, lang])
+  @@map("user_translation")
+}
+
+model Category {
+  id           String                @id @default(cuid())
+  /// @zod.regex(/^[a-z0-9-]+$/)
+  slug         String
+  created_at   DateTime              @default(now())
+  updated_at   DateTime              @updatedAt
+  translations CategoryTranslation[]
+  Post         Post?                 @relation(fields: [postId], references: [id])
+  postId       String?
+  PostCategory PostCategory[]
+}
+
+model CategoryTranslation {
+  id          String   @id @default(cuid())
+  category_id String
+  lang        String
+  /// @zod.min(2).max(50)
+  name        String
+  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+
+  @@unique([category_id, lang])
+  @@map("category_translation")
+}
+
+model Post {
+  id                String             @id @default(cuid())
+  /// @zod.min(3).max(100).regex(/^[a-z0-9-]+$/)
+  slug              String
+  featured_image_id String?
+  gallery           String?
+  status            String
+  published_at      DateTime?
+  author_id         String
+  categories        Category[]
+  created_at        DateTime           @default(now())
+  updated_at        DateTime           @updatedAt
+  translations      PostTranslation[]
+  PostCategory      PostCategory[]
+  PostSeo           PostSeo?
+  PostContentBlock  PostContentBlock[]
+
+  @@index([published_at])
+  @@index([status, published_at])
+}
+
+model PostTranslation {
+  id      String  @id @default(cuid())
+  post_id String
+  lang    String
+  /// @zod.min(5).max(200)
+  title   String
+  /// @zod.max(300)
+  excerpt String?
+  content String
+  post    Post    @relation(fields: [post_id], references: [id], onDelete: Cascade)
+
+  @@unique([post_id, lang])
+  @@map("post_translation")
+}
+
+model PostCategory {
+  id          String   @id @default(cuid())
+  post_id     String
+  category_id String
+  order       Int?
+  created_at  DateTime @default(now())
+  post        Post     @relation(fields: [post_id], references: [id], onDelete: Restrict)
+  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+
+  @@unique([post_id, category_id])
+  @@index([post_id])
+  @@index([category_id])
+}
+
+model PostSeo {
+  id           String               @id @default(cuid())
+  post_id      String               @unique
+  created_at   DateTime             @default(now())
+  updated_at   DateTime             @updatedAt
+  post         Post                 @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  translations PostSeoTranslation[]
+}
+
+model PostSeoTranslation {
+  id               String  @id @default(cuid())
+  post_seo_id      String
+  lang             String
+  /// @zod.max(60)
+  meta_title       String?
+  /// @zod.max(160)
+  meta_description String?
+  og_image_id      String?
+  post_seo         PostSeo @relation(fields: [post_seo_id], references: [id], onDelete: Cascade)
+
+  @@unique([post_seo_id, lang])
+  @@map("post_seo_translation")
+}
+
+model PostContentBlock {
+  id           String                        @id @default(cuid())
+  post_id      String
+  order        Int?
+  created_at   DateTime                      @default(now())
+  updated_at   DateTime                      @updatedAt
+  post         Post                          @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  translations PostContentBlockTranslation[]
+
+  @@index([post_id])
+}
+
+model PostContentBlockTranslation {
+  id                    String           @id @default(cuid())
+  post_content_block_id String
+  lang                  String
+  type                  String
+  /// @zod.max(100)
+  heading               String?
+  content               String?
+  media_id              String?
+  post_content_block    PostContentBlock @relation(fields: [post_content_block_id], references: [id], onDelete: Cascade)
+
+  @@unique([post_content_block_id, lang])
+  @@map("post_content_block_translation")
+}

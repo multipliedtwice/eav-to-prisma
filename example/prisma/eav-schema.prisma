@@ -1,0 +1,42 @@
+// This is the EAV database schema that stores model definitions
+// The consumer maintains this schema, not eav-to-prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./eav.db"
+}
+
+// EAV table storing model definitions as JSON
+model content_model {
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  definition String   // JSON: ModelConfigType
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+// Optional: Component definitions
+model component {
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  definition String   // JSON: ComponentEntityType
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+// EAV instance data (optional - not used by generator)
+model content_instance {
+  id               String   @id @default(cuid())
+  model_id         String
+  lang             String   @default("en")
+  attribute_values String   // JSON: { [key: string]: any }
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@index([model_id])
+  @@index([lang])
+}

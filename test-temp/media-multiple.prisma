@@ -1,0 +1,14 @@
+model Media {
+  id       String @id
+  filename String
+}
+
+model Asset {
+  id   String @id
+  name String
+}
+
+model File {
+  id   String @id
+  path String
+}

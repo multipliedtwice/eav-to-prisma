@@ -1,0 +1,10 @@
+model Media {
+  id         String   @id @default(cuid())
+  filename   String
+  mime_type  String
+  size       Int
+  url        String
+  created_at DateTime @default(now())
+  
+  @@map("media")
+}

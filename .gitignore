@@ -1,0 +1,5 @@
+node_modules
+.yarn
+example/prisma/eav.db
+prisma/generated-content.prisma
+.env

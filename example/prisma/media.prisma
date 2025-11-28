@@ -1,0 +1,29 @@
+// External Media model
+// This file is NOT generated - it's manually maintained
+
+model Media {
+  id         String   @id @default(cuid())
+  filename   String
+  mime_type  String
+  size       Int
+  url        String
+  alt_text   String?
+  width      Int?
+  height     Int?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  
+  @@map("media")
+}
+
+// Optional: Asset model for more complex use cases
+model Asset {
+  id          String   @id @default(cuid())
+  name        String
+  type        String
+  metadata    String?  // JSON
+  storage_key String   @unique
+  created_at  DateTime @default(now())
+  
+  @@map("assets")
+}
